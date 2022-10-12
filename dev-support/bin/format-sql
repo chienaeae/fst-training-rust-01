@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+MAXPROCS=10
+
+# shellcheck source=/dev-support/lib/logging
+. "${SCRIPT_DIR}"/../lib/logging
+
+debug 'version:'
+echo sql-formatter "$(sql-formatter --version)"
+echo
+
+if [ "$#" -eq 0 ]; then
+  warn 'Missing input SQL file'
+  exit 0
+fi
+
+if [ "$#" -eq 1 ]; then
+  if [[ "$1" == "--check" ]]; then
+    find "${SCRIPT_DIR}"/../.. \
+      -name "*.sql" \
+      -type f \
+      -print0 |
+      xargs -P $MAXPROCS -n 1 -0 "${SCRIPT_DIR}"/sql-formatter-wrapper --check
+  fi
+else
+  find "${SCRIPT_DIR}"/../.. \
+    -name "*.sql" \
+    -type f \
+    -print0 |
+    xargs -P $MAXPROCS -n 1 -0 "${SCRIPT_DIR}"/sql-formatter-wrapper
+fi

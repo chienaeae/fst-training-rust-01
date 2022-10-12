@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+conventional-changelog -p angular -i CHANGELOG.md -s
+
+prettier --write CHANGELOG.md

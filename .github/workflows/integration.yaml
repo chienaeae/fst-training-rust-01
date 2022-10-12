@@ -1,0 +1,104 @@
+name: Integration
+
+on:
+  push:
+    branches:
+      - ci/*
+      - main
+      - develop
+      - release/*
+      - staging
+    tags:
+      - v*
+  pull_request:
+
+env:
+  CI: 1
+
+concurrency:
+  group: image-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  image:
+    name: Build and publish images
+    runs-on: [self-hosted, aws]
+    strategy:
+      fail-fast: false
+      matrix:
+        mode:
+          - debug
+          - release
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install docker-buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          version: latest
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Container metadata - Debian
+        id: meta-debian
+        uses: docker/metadata-action@v4
+        with:
+          images: 630821417359.dkr.ecr.us-west-2.amazonaws.com/template/rust
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern=v{{version}}
+            type=semver,pattern=v{{major}}.{{minor}}
+            type=edge
+          flavor: |
+            latest=auto
+            prefix=debian
+            suffix=${{ matrix.mode == 'debug' && '-debug' || ''}}
+          bake-target: debian
+
+      - name: Container metadata - Scratch
+        id: meta-scratch
+        uses: docker/metadata-action@v4
+        with:
+          images: 630821417359.dkr.ecr.us-west-2.amazonaws.com/template/rust
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern=v{{version}}
+            type=semver,pattern=v{{major}}.{{minor}}
+            type=edge
+          flavor: |
+            latest=auto
+            suffix=${{ matrix.mode == 'debug' && '-debug' || ''}}
+          bake-target: scratch
+
+      - name: Merge container metadata
+        run: |
+          jq 'reduce inputs as $in (.; . * $in)' \
+            ${{ steps.meta-debian.outputs.bake-file }} \
+            ${{ steps.meta-scratch.outputs.bake-file }} > /tmp/bake-metadata.json
+
+      - name: Build container images
+        uses: docker/bake-action@v2
+        with:
+          pull: true
+          push: true
+          set: |
+            base.args.DEBUG=${{ matrix.mode == 'debug' && '1' || '0' }}
+          files: |
+            ./dev-support/containers/docker-bake.hcl
+            /tmp/bake-metadata.json
+
+      - name: Clean container metadata
+        run: |
+          rm /tmp/bake-metadata.json
