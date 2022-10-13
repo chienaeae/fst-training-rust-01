@@ -1,0 +1,21 @@
+[package]
+name = "mochi"
+version = "1.0.0"
+authors = ["FST Network <dev@fstk.io>"]
+edition = "2021"
+
+repository = "https://github.com/chienaeae/fst-training-rust-01"
+license-file = "LICENSE"
+publish = false
+
+autobins = false
+
+[[bin]]
+name = "mochi"
+path = "src/bin/main.rs"
+doc = false
+
+
+[dependencies]
+clap = { version = "4", features = ["derive", "env"] }
+mimalloc = "0.1"

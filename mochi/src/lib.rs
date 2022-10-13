@@ -73,7 +73,6 @@
         late_bound_lifetime_arguments,
         legacy_derive_helpers,
         mixed_script_confusables,
-        mutable_borrow_reservation_conflict,
         nontrivial_structural_match,
         non_camel_case_types,
         non_fmt_panics,
