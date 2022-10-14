@@ -1,8 +1,11 @@
 use clap::{Parser, Subcommand};
+
 use snafu::ResultExt;
 use tokio::runtime::Runtime;
 
-use crate::error::Result;
+use mochi::web;
+
+use crate::{error, error::Result};
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -30,8 +33,10 @@ impl Cli {
                     async move {
                         println!("Make FST Network great!");
                         println!("Сделайте FST Network отличным!");
+
+                        web::new_api_server::<error::Error>()?.serve().await
                     },
-                );
+                )?;
                 Ok(())
             }
         }

@@ -17,7 +17,11 @@ doc = false
 
 
 [dependencies]
+futures = "0.3"
 tokio = {version = "1", features = ["rt-multi-thread"]}
+
+axum = {version = "0.5", features = ["headers"]}
+hyper = "0.14"
 
 clap = { version = "4", features = ["derive", "env"] }
 mimalloc = "0.1"

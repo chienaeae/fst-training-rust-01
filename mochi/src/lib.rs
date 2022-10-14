@@ -132,7 +132,9 @@
     )
 )]
 
+pub mod axum;
 pub mod error;
+pub mod web;
 
 #[cfg(test)]
 mod tests {

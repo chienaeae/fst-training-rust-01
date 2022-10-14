@@ -11,6 +11,9 @@ pub enum Error {
         fmt_bracktrace_with_source(backtrace, source)
     ))]
     InitializeTokioRuntime { source: tokio::io::Error, backtrace: Backtrace },
+
+    #[snafu(display("Axum Serve error{}", fmt_bracktrace_with_source(backtrace, source)))]
+    AxumServer { source: hyper::Error, backtrace: Backtrace },
 }
 
 #[inline]
