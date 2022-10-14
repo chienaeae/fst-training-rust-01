@@ -17,5 +17,8 @@ doc = false
 
 
 [dependencies]
+tokio = {version = "1", features = ["rt-multi-thread"]}
+
 clap = { version = "4", features = ["derive", "env"] }
 mimalloc = "0.1"
+snafu = { version = "0.7", default-features = false, features = ["std", "futures"] }

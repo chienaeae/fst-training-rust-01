@@ -1,4 +1,6 @@
 use clap::{Parser, Subcommand};
+use snafu::ResultExt;
+use tokio::runtime::Runtime;
 
 use crate::error::Result;
 
@@ -24,8 +26,12 @@ impl Cli {
     pub fn run(self) -> Result<()> {
         match self.commands {
             Commands::Run => {
-                println!("Make FST Network great!");
-                println!("Сделайте FST Network отличным!");
+                Runtime::new().context(mochi::error::InitializeTokioRuntimeSnafu)?.block_on(
+                    async move {
+                        println!("Make FST Network great!");
+                        println!("Сделайте FST Network отличным!");
+                    },
+                );
                 Ok(())
             }
         }
