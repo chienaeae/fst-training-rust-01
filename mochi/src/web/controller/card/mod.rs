@@ -3,25 +3,12 @@ use axum::{routing, Router};
 pub fn v1() -> Router {
     Router::new().nest(
         "/v1/card",
-        Router::new()
-            .route(
-                "/",
-                routing::post(self::v1::create).get(|| async {
-                    println!("Get all cards");
-                }),
-            )
-            .route(
-                "/:id",
-                routing::get(|| async {
-                    println!("Get a card by id");
-                })
-                .put(|| async {
-                    println!("Update a card by id");
-                })
-                .delete(|| async {
-                    println!("Delete a card by id");
-                }),
-            ),
+        Router::new().route("/", routing::post(self::v1::create).get(self::v1::get_all)).route(
+            "/:id",
+            routing::get(self::v1::get_by_id)
+                .put(self::v1::update_by_id)
+                .delete(self::v1::delete_by_id),
+        ),
     )
 }
 
