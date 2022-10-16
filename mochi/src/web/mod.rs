@@ -1,6 +1,7 @@
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 pub(crate) mod controller;
+mod error;
 
 use axum::Router;
 

@@ -6,10 +6,7 @@ pub fn v1() -> Router {
         Router::new()
             .route(
                 "/",
-                routing::post(|| async {
-                    println!("Create a card");
-                })
-                .get(|| async {
+                routing::post(self::v1::create).get(|| async {
                     println!("Get all cards");
                 }),
             )
@@ -27,3 +24,5 @@ pub fn v1() -> Router {
             ),
     )
 }
+
+mod v1;
