@@ -27,7 +27,7 @@ tokio-util = { version = "0.7", features = ["io"] }
 axum = {version = "0.5", features = ["headers"]}
 hyper = "0.14"
 
-sqlx = { version = "0.6", default-features = false, features = ["runtime-tokio-native-tls", "chrono", "macros", "migrate", "offline", "postgres", "uuid"] }
+sqlx = { version = "0.6", default-features = false, features = ["runtime-tokio-native-tls", "chrono",  "offline", "macros", "migrate", "postgres", "uuid"] }
 
 chrono = { version = "0.4", features = ["serde"]}
 clap = { version = "4", features = ["derive", "env"] }
