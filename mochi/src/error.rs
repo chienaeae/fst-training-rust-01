@@ -14,6 +14,19 @@ pub enum Error {
 
     #[snafu(display("Axum Serve error{}", fmt_bracktrace_with_source(backtrace, source)))]
     AxumServer { source: hyper::Error, backtrace: Backtrace },
+
+    #[snafu(display(
+        "Could not connect PostgreSQL with endpoint `postgres://{user}@{host}:{port}/{database}`{}",
+        fmt_bracktrace_with_source(backtrace, source)
+    ))]
+    ConnectPostgres {
+        host: String,
+        port: u16,
+        user: String,
+        database: String,
+        source: sqlx::Error,
+        backtrace: Backtrace,
+    },
 }
 
 #[inline]
