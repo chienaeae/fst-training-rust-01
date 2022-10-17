@@ -132,6 +132,13 @@
     )
 )]
 
+pub mod axum;
+pub mod domain;
+pub mod error;
+pub mod response;
+pub mod utils;
+pub mod web;
+
 #[cfg(test)]
 mod tests {
     #[test]
