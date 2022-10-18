@@ -136,6 +136,7 @@ pub mod axum;
 pub mod domain;
 pub mod error;
 pub mod response;
+mod service;
 pub mod utils;
 pub mod web;
 
