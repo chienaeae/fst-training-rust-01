@@ -1,3 +1,24 @@
 {
-  "db": "PostgreSQL"
+  "db": "PostgreSQL",
+  "5b391d212db30249e2139e024bd6c904ab54d0f96f44b9c5d7155697a7e4e62b": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text"
+        ]
+      }
+    },
+    "query": "INSERT INTO\n  card (\"name\", description)\nVALUES\n  ($1, $2)\nRETURNING\n  id\n"
+  }
 }
