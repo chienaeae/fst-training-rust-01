@@ -1,10 +1,9 @@
 use clap::{Parser, Subcommand};
-use sqlx;
 
 use snafu::ResultExt;
 use tokio::runtime::Runtime;
 
-use mochi::web;
+use mochi::{web, DefaultContext};
 
 use crate::{error, error::Result};
 
@@ -34,7 +33,9 @@ impl Cli {
                     async move {
                         let _postgres = init_postgres().await?;
 
-                        web::new_api_server::<error::Error>()?.serve().await
+                        let ctx = DefaultContext::new(_postgres.clone());
+
+                        web::new_api_server::<DefaultContext, error::Error>(ctx)?.serve().await
                     },
                 )?;
                 Ok(())

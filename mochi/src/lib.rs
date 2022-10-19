@@ -133,6 +133,8 @@
 )]
 
 pub mod axum;
+pub mod condition;
+mod context;
 pub mod domain;
 pub mod error;
 pub mod response;
@@ -140,6 +142,7 @@ mod service;
 pub mod utils;
 pub mod web;
 
+pub use self::context::{Context, DefaultContext};
 #[cfg(test)]
 mod tests {
     #[test]
