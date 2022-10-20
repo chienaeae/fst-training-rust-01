@@ -27,6 +27,8 @@ pub enum Error {
         source: sqlx::Error,
         backtrace: Backtrace,
     },
+    #[snafu(display("Could not migrate schema{}", fmt_backtrace_with_source(backtrace, source)))]
+    MigrateSchema { source: sqlx::migrate::MigrateError, backtrace: Backtrace },
 }
 
 #[inline]
