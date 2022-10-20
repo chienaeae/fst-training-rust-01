@@ -14,3 +14,19 @@ pub struct Card {
 
     pub creation_timestamp: DateTime<Utc>,
 }
+
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateCardRequest {
+    pub name: String,
+
+    pub description: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateCardRequest {
+    pub name: String,
+
+    pub description: String,
+}

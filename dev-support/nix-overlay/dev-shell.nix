@@ -45,6 +45,9 @@ mkShell.override { stdenv = llvmPackages.libcxxStdenv; } {
       yamale
       yamllint
 
+      # database and persistent
+      sqlx-cli
+
       # TODO: figure out who use libiconv
       libiconv
     ] ++ lib.optionals stdenv.isDarwin [

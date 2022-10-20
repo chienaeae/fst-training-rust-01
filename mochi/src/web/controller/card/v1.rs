@@ -1,76 +1,87 @@
-use axum::{extract::Path, http::StatusCode, response::Json};
-use chrono::Utc;
+use axum::{extract::Path, http::StatusCode, response::Json, Extension};
+use snafu::OptionExt;
 use uuid::Uuid;
 
 use crate::{
-    domain::model::{Card, DeleteInfo},
-    response::EncapsulatedJson,
-    web::error,
+    condition::Condition, domain::model, response::EncapsulatedJson, service::CardPersistService,
+    web::error, Context,
 };
 
-pub async fn create(Json(card): Json<Card>) -> error::Result<EncapsulatedJson<Card>> {
-    tokio::spawn(async {}).await.unwrap();
-    println!("Create a card");
+const RESOURCE: &str = "Card";
+
+pub async fn create<C>(
+    Extension(ctx): Extension<C>,
+    Json(card): Json<model::CreateCardRequest>,
+) -> error::Result<EncapsulatedJson<model::Card>>
+where
+    C: Context + 'static,
+{
+    let service = ctx.card_persist_service();
+    let id = service.create(&card).await?;
+    let card = service
+        .get_by_id(id)
+        .await?
+        .context(error::NotFoundSnafu { resource: RESOURCE, condition: Condition::with_id(id) })?;
+
     Ok(EncapsulatedJson::ok(card).status_code(StatusCode::CREATED))
 }
 
-pub async fn get_all() -> error::Result<EncapsulatedJson<Vec<Card>>> {
-    tokio::spawn(async {}).await.unwrap();
-    println!("Get cards");
-    let data = vec![
-        Card {
-            id: Uuid::new_v4(),
-            name: "Test Name".to_string(),
-            description: "Test Description".to_string(),
-            creation_timestamp: Utc::now(),
-        },
-        Card {
-            id: Uuid::new_v4(),
-            name: "Test Name".to_string(),
-            description: "Test Description".to_string(),
-            creation_timestamp: Utc::now(),
-        },
-        Card {
-            id: Uuid::new_v4(),
-            name: "Test Name".to_string(),
-            description: "Test Description".to_string(),
-            creation_timestamp: Utc::now(),
-        },
-    ];
+pub async fn get_all<C>(
+    Extension(ctx): Extension<C>,
+) -> error::Result<EncapsulatedJson<Vec<model::Card>>>
+where
+    C: Context + 'static,
+{
+    let cards = ctx.card_persist_service().get_all().await?;
 
-    Ok(EncapsulatedJson::ok(data))
+    Ok(EncapsulatedJson::ok(cards))
 }
 
-pub async fn get_by_id(Path(id): Path<Uuid>) -> error::Result<EncapsulatedJson<Card>> {
-    tokio::spawn(async {}).await.unwrap();
-    println!("Get a card of {}", id);
-    let data = Card {
-        id: Uuid::new_v4(),
-        name: "Test Name".to_string(),
-        description: "Test Description".to_string(),
-        creation_timestamp: Utc::now(),
-    };
+pub async fn get_by_id<C>(
+    Extension(ctx): Extension<C>,
+    Path(id): Path<Uuid>,
+) -> error::Result<EncapsulatedJson<model::Card>>
+where
+    C: Context + 'static,
+{
+    let service = ctx.card_persist_service();
+    let card = service
+        .get_by_id(id)
+        .await?
+        .context(error::NotFoundSnafu { resource: RESOURCE, condition: Condition::with_id(id) })?;
 
-    Ok(EncapsulatedJson::ok(data).status_code(StatusCode::CREATED))
+    Ok(EncapsulatedJson::ok(card))
 }
 
-pub async fn update_by_id(Path(id): Path<Uuid>) -> error::Result<EncapsulatedJson<Card>> {
-    tokio::spawn(async {}).await.unwrap();
-    println!("Update a card of {}", id);
-    let data = Card {
-        id: Uuid::new_v4(),
-        name: "Test Name".to_string(),
-        description: "Test Description".to_string(),
-        creation_timestamp: Utc::now(),
-    };
+pub async fn update_by_id<C>(
+    Extension(ctx): Extension<C>,
+    Path(id): Path<Uuid>,
+    Json(update_card): Json<model::UpdateCardRequest>,
+) -> error::Result<EncapsulatedJson<model::Card>>
+where
+    C: Context + 'static,
+{
+    let service = ctx.card_persist_service();
+    let card = service
+        .update_by_id(id, &update_card)
+        .await?
+        .context(error::NotFoundSnafu { resource: RESOURCE, condition: Condition::with_id(id) })?;
 
-    Ok(EncapsulatedJson::ok(data).status_code(StatusCode::CREATED))
+    Ok(EncapsulatedJson::ok(card).status_code(StatusCode::CREATED))
 }
 
-pub async fn delete_by_id(Path(id): Path<Uuid>) -> error::Result<EncapsulatedJson<DeleteInfo>> {
-    tokio::spawn(async {}).await.unwrap();
-    println!("Delete a card of {}", id);
-    let data = DeleteInfo { id: Uuid::new_v4() };
+pub async fn delete_by_id<C>(
+    Extension(ctx): Extension<C>,
+    Path(id): Path<Uuid>,
+) -> error::Result<EncapsulatedJson<model::DeleteInfo>>
+where
+    C: Context + 'static,
+{
+    let service = ctx.card_persist_service();
+    let id = service
+        .delete_by_id(id)
+        .await?
+        .context(error::NotFoundSnafu { resource: RESOURCE, condition: Condition::with_id(id) })?;
 
-    Ok(EncapsulatedJson::ok(data).status_code(StatusCode::CREATED))
+    Ok(EncapsulatedJson::ok(model::DeleteInfo::new(id)))
 }
