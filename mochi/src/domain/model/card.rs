@@ -22,3 +22,11 @@ pub struct CreateCardRequest {
 
     pub description: String,
 }
+
+#[derive(Clone, Debug, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateCardRequest {
+    pub name: String,
+
+    pub description: String,
+}

@@ -1,5 +1,4 @@
 use axum::{extract::Path, http::StatusCode, response::Json, Extension};
-use chrono::Utc;
 use snafu::OptionExt;
 use uuid::Uuid;
 
@@ -38,38 +37,51 @@ where
     Ok(EncapsulatedJson::ok(cards))
 }
 
-pub async fn get_by_id(Path(id): Path<Uuid>) -> error::Result<EncapsulatedJson<model::Card>> {
-    tokio::spawn(async {}).await.unwrap();
-    println!("Get a card of {}", id);
-    let data = model::Card {
-        id: Uuid::new_v4(),
-        name: "Test Name".to_string(),
-        description: "Test Description".to_string(),
-        creation_timestamp: Utc::now(),
-    };
-
-    Ok(EncapsulatedJson::ok(data).status_code(StatusCode::CREATED))
-}
-
-pub async fn update_by_id(Path(id): Path<Uuid>) -> error::Result<EncapsulatedJson<model::Card>> {
-    tokio::spawn(async {}).await.unwrap();
-    println!("Update a card of {}", id);
-    let data = model::Card {
-        id: Uuid::new_v4(),
-        name: "Test Name".to_string(),
-        description: "Test Description".to_string(),
-        creation_timestamp: Utc::now(),
-    };
-
-    Ok(EncapsulatedJson::ok(data).status_code(StatusCode::CREATED))
-}
-
-pub async fn delete_by_id(
+pub async fn get_by_id<C>(
+    Extension(ctx): Extension<C>,
     Path(id): Path<Uuid>,
-) -> error::Result<EncapsulatedJson<model::DeleteInfo>> {
-    tokio::spawn(async {}).await.unwrap();
-    println!("Delete a card of {}", id);
-    let data = model::DeleteInfo { id: Uuid::new_v4() };
+) -> error::Result<EncapsulatedJson<model::Card>>
+where
+    C: Context + 'static,
+{
+    let service = ctx.card_persist_service();
+    let card = service
+        .get_by_id(id)
+        .await?
+        .context(error::NotFoundSnafu { resource: RESOURCE, condition: Condition::with_id(id) })?;
 
-    Ok(EncapsulatedJson::ok(data).status_code(StatusCode::CREATED))
+    Ok(EncapsulatedJson::ok(card))
+}
+
+pub async fn update_by_id<C>(
+    Extension(ctx): Extension<C>,
+    Path(id): Path<Uuid>,
+    Json(update_card): Json<model::UpdateCardRequest>,
+) -> error::Result<EncapsulatedJson<model::Card>>
+where
+    C: Context + 'static,
+{
+    let service = ctx.card_persist_service();
+    let card = service
+        .update_by_id(id, &update_card)
+        .await?
+        .context(error::NotFoundSnafu { resource: RESOURCE, condition: Condition::with_id(id) })?;
+
+    Ok(EncapsulatedJson::ok(card).status_code(StatusCode::CREATED))
+}
+
+pub async fn delete_by_id<C>(
+    Extension(ctx): Extension<C>,
+    Path(id): Path<Uuid>,
+) -> error::Result<EncapsulatedJson<model::DeleteInfo>>
+where
+    C: Context + 'static,
+{
+    let service = ctx.card_persist_service();
+    let id = service
+        .delete_by_id(id)
+        .await?
+        .context(error::NotFoundSnafu { resource: RESOURCE, condition: Condition::with_id(id) })?;
+
+    Ok(EncapsulatedJson::ok(model::DeleteInfo::new(id)))
 }

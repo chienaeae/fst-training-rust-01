@@ -1,4 +1,5 @@
 use crate::{
+    condition::Condition,
     domain::{entity, model},
     service::persist::{error, error::Result, DefaultPersistService},
 };
@@ -14,9 +15,13 @@ pub trait CardPersistService: Send + Sync {
 
     async fn get_by_id(&self, id: Uuid) -> Result<Option<model::Card>>;
 
-    // async fn update_by_id(&self) -> Result<Option<model::Card>>;
+    async fn update_by_id(
+        &self,
+        id: Uuid,
+        model::UpdateCardRequest { name, description }: &model::UpdateCardRequest,
+    ) -> Result<Option<model::Card>>;
 
-    // async fn delete_by_id(&self) -> Result<Option<Uuid>>;
+    async fn delete_by_id(&self, id: Uuid) -> Result<Option<Uuid>>;
 }
 
 #[async_trait]
@@ -34,12 +39,12 @@ impl CardPersistService for DefaultPersistService {
     }
 
     async fn get_all(&self) -> Result<Vec<model::Card>> {
-        let _card_entities = sqlx::query_file_as!(entity::Card, "sql/card/get_all.sql")
+        let card_entities = sqlx::query_file_as!(entity::Card, "sql/card/get_all.sql")
             .fetch_all(&self.postgres)
             .await
             .context(error::GetAllCardSnafu)?;
 
-        let cards = _card_entities.into_iter().map(model::Card::from).collect();
+        let cards = card_entities.into_iter().map(model::Card::from).collect();
 
         Ok(cards)
     }
@@ -48,10 +53,35 @@ impl CardPersistService for DefaultPersistService {
         let card_entity = sqlx::query_file_as!(entity::Card, "sql/card/get_by_id.sql", id)
             .fetch_optional(&self.postgres)
             .await
-            .context(error::GetCardSnafu)?;
+            .context(error::GetCardSnafu { condition: Condition::with_id(id) })?;
+        let card = card_entity.map(model::Card::from);
+
+        Ok(card)
+    }
+
+    async fn update_by_id(
+        &self,
+        id: Uuid,
+        model::UpdateCardRequest { name, description }: &model::UpdateCardRequest,
+    ) -> Result<Option<model::Card>> {
+        let card_entity =
+            sqlx::query_file_as!(entity::Card, "sql/card/update_by_id.sql", id, name, description)
+                .fetch_optional(&self.postgres)
+                .await
+                .context(error::UpdateCardSnafu { condition: Condition::with_id(id) })?;
 
         let card = card_entity.map(model::Card::from);
 
         Ok(card)
+    }
+
+    async fn delete_by_id(&self, id: Uuid) -> Result<Option<Uuid>> {
+        let id = sqlx::query_file!("sql/card/delete_by_id.sql", id)
+            .fetch_optional(&self.postgres)
+            .await
+            .context(error::DeleteCardSnafu { condition: Condition::with_id(id) })?
+            .map(|record| record.id);
+
+        Ok(id)
     }
 }

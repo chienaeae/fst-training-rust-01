@@ -1,5 +1,25 @@
 {
   "db": "PostgreSQL",
+  "4ee3e727c920a9f2ac7d3d63e5dc37a3ce7094888d669ea57c9a6cdb66b61db9": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "DELETE FROM\n  card\nWHERE\n  id = $1\nRETURNING\n  id\n"
+  },
   "5b391d212db30249e2139e024bd6c904ab54d0f96f44b9c5d7155697a7e4e62b": {
     "describe": {
       "columns": [
@@ -20,6 +40,46 @@
       }
     },
     "query": "INSERT INTO\n  card (\"name\", description)\nVALUES\n  ($1, $2)\nRETURNING\n  id\n"
+  },
+  "6925010ad2d08dc5829b0b92354e3fc8a444b7ce652a67f3b5b6cdc558f72e96": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "name",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "description",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "creation_timestamp",
+          "ordinal": 3,
+          "type_info": "Timestamp"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Varchar",
+          "Text"
+        ]
+      }
+    },
+    "query": "UPDATE\n  card\nSET\n  \"name\" = $2,\n  description = $3\nWHERE\n  id = $1\nRETURNING\n  id,\n  \"name\",\n  description,\n  creation_timestamp\n"
   },
   "6ae296ffaedce7fb2745dfaebc10cd2ef6ea03cccca0e41f1731b8661d291861": {
     "describe": {
