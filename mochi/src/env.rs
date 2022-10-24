@@ -1,5 +1,6 @@
 pub const API_ADDRESS: &str = "API_ADDRESS";
 pub const API_PORT: &str = "API_PORT";
+pub const API_AUTHORIZATION_SECRET: &str = "API_AUTHORIZATION_SECRET";
 
 pub const POSTGRES_HOST: &str = "POSTGRES_HOST";
 pub const POSTGRES_PORT: &str = "POSTGRES_PORT";
