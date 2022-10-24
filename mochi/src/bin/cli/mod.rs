@@ -1,3 +1,5 @@
+mod config;
+
 use clap::{Parser, Subcommand};
 
 use snafu::ResultExt;
@@ -8,8 +10,10 @@ use mochi::{web, DefaultContext};
 
 use crate::{error, error::Result};
 
+pub use self::config::Config;
+
 const APP_NAME: &str = "Mochi";
-const MIGRATOR: Migrator = Migrator { ..sqlx::migrate!() };
+const MIGRATOR: Migrator = sqlx::migrate!();
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, long_about = None)]
@@ -21,7 +25,10 @@ pub struct Cli {
 #[derive(Debug, Subcommand)]
 enum Commands {
     #[command(about = "Runs mochi")]
-    Run,
+    Run {
+        #[clap(flatten)]
+        config: Box<Config>,
+    },
 }
 
 impl Default for Cli {
@@ -32,10 +39,12 @@ impl Default for Cli {
 impl Cli {
     pub fn run(self) -> Result<()> {
         match self.commands {
-            Commands::Run => {
+            Commands::Run { config } => {
+                let Config { api, postgres } = *config;
+
                 Runtime::new().context(mochi::error::InitializeTokioRuntimeSnafu)?.block_on(
                     async move {
-                        let _postgres = init_postgres().await?;
+                        let _postgres = init_postgres(&postgres).await?;
 
                         let ctx = DefaultContext::new(_postgres.clone());
 
@@ -50,7 +59,12 @@ impl Cli {
                             }
                         });
 
-                        web::new_api_server::<DefaultContext, error::Error>(ctx)?.serve().await
+                        web::new_api_server::<DefaultContext, error::Error>(
+                            api.socket_address(),
+                            ctx,
+                        )?
+                        .serve()
+                        .await
                     },
                 )?;
                 Ok(())
@@ -59,26 +73,28 @@ impl Cli {
     }
 }
 
-async fn init_postgres() -> Result<sqlx::Pool<sqlx::Postgres>> {
-    let host = "127.0.0.1";
-    let port = 5432;
-    let user = "user";
-    let database = "mochi";
+async fn init_postgres(
+    config::PostgresConfig { host, port, user, password, database }: &config::PostgresConfig,
+) -> Result<sqlx::Pool<sqlx::Postgres>> {
     let connect_opts = sqlx::postgres::PgConnectOptions::new()
         .host(host)
-        .port(port)
+        .port(*port)
         .username(user)
-        .password("mysecretpassword")
+        .password(password)
         .database(database)
         .application_name(APP_NAME)
         .ssl_mode(sqlx::postgres::PgSslMode::Disable);
 
     let pool_opts = sqlx::postgres::PgPoolOptions::new().max_connections(5);
 
-    let pool = pool_opts
-        .connect_with(connect_opts)
-        .await
-        .with_context(|_| mochi::error::ConnectPostgresSnafu { host, port, user, database })?;
+    let pool = pool_opts.connect_with(connect_opts).await.with_context(|_| {
+        mochi::error::ConnectPostgresSnafu {
+            host: host.clone(),
+            port: *port,
+            user: user.clone(),
+            database: database.clone(),
+        }
+    })?;
 
     Ok(pool)
 }
