@@ -16,7 +16,7 @@ pub struct Config {
 #[derive(Clone, Debug, Args)]
 pub struct ApiConfig {
     #[clap(
-    name = "server address",
+    name = "api server address",
     long = "api-address",
     env = env::API_ADDRESS,
     default_value = "127.0.0.1"
@@ -24,17 +24,28 @@ pub struct ApiConfig {
     address: IpAddr,
 
     #[clap(
-    name = "server port",
+    name = "api server port",
     long = "api-port",
     env = env::API_PORT,
     default_value = "3000"
   )]
     port: u16,
+
+    #[clap(
+      name = "api authorization secret",
+      long = "api-authorization-secret",
+      env = env::API_AUTHORIZATION_SECRET,
+      help = "PKCS#1 or PKCS#8 RSA public key in PEM format",
+    )]
+    authorization_secret: String,
 }
 
 impl ApiConfig {
     #[inline]
     pub fn socket_address(&self) -> SocketAddr { SocketAddr::new(self.address, self.port) }
+
+    #[inline]
+    pub fn authorization_secret(&self) -> &str { &self.authorization_secret }
 }
 
 #[derive(Clone, Debug, Args)]

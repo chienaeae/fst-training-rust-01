@@ -23,6 +23,9 @@ pub enum Error {
     #[snafu(display("{source}"))]
     PersistService { source: PersistError },
 
+    #[snafu(display("Invalid authentication"))]
+    InvalidAuthentication,
+
     #[snafu(display("not yet implemented"))]
     NotImplemented,
 
@@ -43,6 +46,12 @@ impl IntoResponse for Error {
         let err = match self {
             Self::Common { source } => return source.into_response(),
             Self::PersistService { source } => return source.into_response(),
+            Self::InvalidAuthentication { .. } => response::Error {
+                type_: response::ErrorType::Unauthorized,
+                code: None,
+                message: self.to_string(),
+                additional_fields: IndexMap::default(),
+            },
             Self::NotImplemented { .. } => response::Error {
                 type_: response::ErrorType::Internal,
                 code: None,
@@ -72,6 +81,7 @@ impl Error {
     pub const fn status_code(&self) -> StatusCode {
         match self {
             Self::Common { source } => source.status_code(),
+            Self::InvalidAuthentication { .. } => StatusCode::UNAUTHORIZED,
             Self::NotFound { .. } => StatusCode::NOT_FOUND,
             Self::PersistService { .. } | Self::NotImplemented { .. } => {
                 StatusCode::INTERNAL_SERVER_ERROR

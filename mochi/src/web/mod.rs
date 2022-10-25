@@ -1,9 +1,14 @@
+// FIXME: allow: clippy bug https://github.com/rust-lang/rust-clippy/issues/8757
+#![allow(clippy::trait_duplication_in_bounds)]
+
 use std::net::SocketAddr;
 
 pub(crate) mod controller;
 mod error;
+pub mod jwt;
 
 use axum::{Extension, Router};
+use tower_http::auth::AsyncRequireAuthorizationLayer;
 
 use crate::{axum::AxumWebServer, Context};
 
@@ -11,12 +16,18 @@ use crate::{axum::AxumWebServer, Context};
 ///
 /// * if it cannot create runtime
 /// * if it cannot bind server
-pub fn new_api_server<C, E>(socket_address: SocketAddr, ctx: C) -> Result<AxumWebServer<E>, E>
+pub fn new_api_server<C, E>(
+    socket_address: SocketAddr,
+    authorization_secret: &str,
+    ctx: C,
+) -> Result<AxumWebServer<E>, E>
 where
     C: Context + 'static,
-    E: std::error::Error + From<crate::error::Error> + Send,
+    E: std::error::Error + From<crate::error::Error> + From<jwt::error::Error> + Send,
 {
-    let private_router = self::controller::api_v1_index::<C>().layer(Extension(ctx));
+    let private_router = self::controller::api_v1_index::<C>()
+        .layer(AsyncRequireAuthorizationLayer::new(jwt::JwtAuth::new(authorization_secret)?))
+        .layer(Extension(ctx));
 
     let router = Router::new().merge(private_router);
 

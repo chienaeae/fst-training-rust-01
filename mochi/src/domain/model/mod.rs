@@ -1,10 +1,14 @@
 mod card;
+mod user;
 
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-pub use self::card::{Card, CreateCardRequest, UpdateCardRequest};
+pub use self::{
+    card::{Card, CreateCardRequest, UpdateCardRequest},
+    user::User,
+};
 
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq, JsonSchema)]
 pub struct DeleteInfo {

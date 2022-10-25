@@ -61,6 +61,7 @@ impl Cli {
 
                         web::new_api_server::<DefaultContext, error::Error>(
                             api.socket_address(),
+                            api.authorization_secret(),
                             ctx,
                         )?
                         .serve()
