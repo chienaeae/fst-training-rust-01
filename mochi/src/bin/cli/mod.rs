@@ -7,6 +7,7 @@ use sqlx::migrate::Migrator;
 use tokio::runtime::Runtime;
 
 use mochi::{web, DefaultContext};
+use saffron_client::Client as CoreClient;
 
 use crate::{error, error::Result};
 
@@ -40,12 +41,12 @@ impl Cli {
     pub fn run(self) -> Result<()> {
         match self.commands {
             Commands::Run { config } => {
-                let Config { api, postgres } = *config;
+                let Config { api, postgres, core } = *config;
 
                 Runtime::new().context(mochi::error::InitializeTokioRuntimeSnafu)?.block_on(
                     async move {
                         let _postgres = init_postgres(&postgres).await?;
-
+                        let core_client = init_core_client(core)?;
                         let ctx = DefaultContext::new(_postgres.clone());
 
                         tokio::spawn({
@@ -59,9 +60,10 @@ impl Cli {
                             }
                         });
 
-                        web::new_api_server::<DefaultContext, error::Error>(
+                        web::new_api_server::<DefaultContext, CoreClient, error::Error>(
                             api.socket_address(),
                             api.authorization_secret(),
+                            core_client,
                             ctx,
                         )?
                         .serve()
@@ -98,4 +100,13 @@ async fn init_postgres(
     })?;
 
     Ok(pool)
+}
+
+fn init_core_client(
+    config::CoreClientConfig { host, port, use_http, skip_cert }: config::CoreClientConfig,
+) -> Result<CoreClient> {
+    let core_client = CoreClient::new(&host, port, use_http, skip_cert)
+        .context(mochi::error::ConnectCoreClientSnafu { host, port, use_http, skip_cert })?;
+
+    Ok(core_client)
 }

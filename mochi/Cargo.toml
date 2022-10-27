@@ -15,6 +15,14 @@ name = "mochi"
 path = "src/bin/main.rs"
 doc = false
 
+[features]
+default = [
+  "native-tls",
+]
+native-tls = [
+  "saffron-client/native-tls"
+]
+
 [dependencies]
 schemars = { version = "0.8", features = ["chrono","uuid1"] }
 serde = {version = "1", features = ["derive"]}
@@ -39,3 +47,10 @@ mimalloc = "0.1"
 mime = "0.3"
 snafu = { version = "0.7", default-features = false, features = ["std", "futures"] }
 uuid = { version = "1", features = ["serde", "v4"] }
+
+[dependencies.saffron-client]
+git = "ssh://git@github.com/fstnetwork/saffron"
+# rev = "30461efbb7c45d42d9da05da209a4e2288d5ea71"
+branch = "release/0.7.0"
+package = "saffron-client"
+default-features = false
