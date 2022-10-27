@@ -5,6 +5,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub))]
+#[allow(clippy::large_enum_variant)]
 pub enum Error {
     #[snafu(display(
         "Can not initialize Tokio runtime{}",
@@ -27,6 +28,21 @@ pub enum Error {
         source: sqlx::Error,
         backtrace: Backtrace,
     },
+
+    #[snafu(display(
+        "Could not connect Core client with endpoint `{host}:{port}` using_http={use_http} \
+         skipping_cert={skip_cert}{}",
+        fmt_backtrace_with_source(backtrace, source)
+    ))]
+    ConnectCoreClient {
+        host: String,
+        port: u16,
+        use_http: bool,
+        skip_cert: bool,
+        source: saffron_client::ClientError,
+        backtrace: Backtrace,
+    },
+
     #[snafu(display("Could not migrate schema{}", fmt_backtrace_with_source(backtrace, source)))]
     MigrateSchema { source: sqlx::migrate::MigrateError, backtrace: Backtrace },
 }

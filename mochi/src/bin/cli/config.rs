@@ -11,6 +11,9 @@ pub struct Config {
 
     #[clap(flatten)]
     pub postgres: PostgresConfig,
+
+    #[clap(flatten)]
+    pub core: CoreClientConfig,
 }
 
 #[derive(Clone, Debug, Args)]
@@ -84,4 +87,34 @@ pub struct PostgresConfig {
     env = env::POSTGRES_DATABASE,
   )]
     pub database: String,
+}
+
+#[derive(Clone, Debug, Args)]
+pub struct CoreClientConfig {
+    #[clap(
+      name = "loc core host",
+      long = "loc-core-host",
+      env = env::LOC_CORE_HOST,
+      default_value = "127.0.0.1"
+    )]
+    pub host: String,
+    #[clap(
+      name = "loc core port",
+      long = "loc-core-port",
+      env = env::LOC_CORE_PORT,
+      default_value = "8787"
+    )]
+    pub port: u16,
+    #[clap(
+      name = "is use http",
+      long = "loc-core-client-use-http",
+      env = env::LOC_CORE_CLIENT_USE_HTTP,
+    )]
+    pub use_http: bool,
+    #[clap(
+      name = "skip certificate",
+      long = "loc-core-client-skip-cert",
+      env = env::LOC_CORE_CLIENT_SKIP_CERT,
+    )]
+    pub skip_cert: bool,
 }
