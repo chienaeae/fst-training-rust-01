@@ -1621,6 +1621,7 @@ dependencies = [
  "mimalloc",
  "mime",
  "saffron-client",
+ "saffron-repository",
  "schemars",
  "serde",
  "serde_json",

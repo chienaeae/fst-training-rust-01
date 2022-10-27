@@ -54,3 +54,10 @@ git = "ssh://git@github.com/fstnetwork/saffron"
 branch = "release/0.7.0"
 package = "saffron-client"
 default-features = false
+
+[dependencies.saffron-repository]
+git = "ssh://git@github.com/fstnetwork/saffron"
+# rev = "30461efbb7c45d42d9da05da209a4e2288d5ea71"
+branch = "release/0.7.0"
+package = "saffron-repository"
+default-features = false

@@ -40,7 +40,7 @@ where
         + 'static,
     E: std::error::Error + From<crate::error::Error> + From<jwt::error::Error> + Send,
 {
-    let private_router = self::controller::api_v1_index::<C>()
+    let private_router = self::controller::api_v1_index::<C, CoreClient>()
         .layer(AsyncRequireAuthorizationLayer::new(jwt::JwtAuth::new(authorization_secret)?))
         .layer(Extension(core_client))
         .layer(Extension(ctx));
