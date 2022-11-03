@@ -13,6 +13,6 @@ where
 {
     Router::new().nest(
         "/api",
-        Router::new().merge(self::card::v1::<C>()).merge(self::logic::v1::<CoreClient>()),
+        Router::new().merge(self::card::v1::<C>()).merge(self::logic::v1::<C, CoreClient>()),
     )
 }
