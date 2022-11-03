@@ -5,7 +5,6 @@ use axum::{
 };
 
 use saffron_client::GenericLogicClient;
-use saffron_repository::model::GenericLogic;
 use snafu::{OptionExt, ResultExt};
 use uuid::Uuid;
 
@@ -16,20 +15,37 @@ use crate::{
 
 const RESOURCE: &str = "Logic";
 
-pub async fn get_all<CoreClient>(
+pub async fn get_all<C, CoreClient>(
+    Extension(ctx): Extension<C>,
     Extension(core_client): Extension<CoreClient>,
     TypedHeader(bearer_token): TypedHeader<Authorization<Bearer>>,
-) -> error::Result<EncapsulatedJson<Vec<GenericLogic>>>
+) -> error::Result<EncapsulatedJson<Vec<model::Logic>>>
 where
+    C: Context + 'static,
     CoreClient: GenericLogicClient + 'static,
 {
     let token = bearer_token.token();
+
+    let service = ctx.card_persist_service();
 
     let logics = GenericLogicClient::get_all(&core_client, token)
         .await
         .context(error::SaffronClientSnafu {})?;
 
-    Ok(EncapsulatedJson::ok(logics))
+    let mut result: Vec<model::Logic> = Vec::new();
+
+    for logic in &logics {
+        let linked_logic_info = service
+            .get_linked_logic_info_by_generic_logic_id(logic.metadata.permanent_identity)
+            .await
+            .context(error::PersistServiceSnafu)?;
+
+        let item = model::Logic { metadata: logic.clone(), linked_card: linked_logic_info };
+
+        result.push(item);
+    }
+
+    Ok(EncapsulatedJson::ok(result))
 }
 
 pub async fn link_card<C, CoreClient>(

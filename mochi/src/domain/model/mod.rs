@@ -8,7 +8,7 @@ use uuid::Uuid;
 
 pub use self::{
     card::{Card, CreateCardRequest, UpdateCardRequest},
-    logic::LinkedLogicInfo,
+    logic::{LinkedLogicInfo, Logic},
     user::User,
 };
 

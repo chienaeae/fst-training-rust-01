@@ -10,7 +10,7 @@ where
 {
     Router::new().nest(
         "/v1/generic-logic",
-        Router::new().route("/", routing::get(self::v1::get_all::<CoreClient>)).route(
+        Router::new().route("/", routing::get(self::v1::get_all::<C, CoreClient>)).route(
             "/:id/link-card-by-id/:card_id",
             routing::post(self::v1::link_card::<C, CoreClient>)
                 .delete(self::v1::unlink_card::<C, CoreClient>),
