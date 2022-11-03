@@ -16,6 +16,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub))]
+#[allow(clippy::large_enum_variant)]
 pub enum Error {
     #[snafu(display("{source}"))]
     Common { source: Box<self::Error> },
@@ -25,6 +26,9 @@ pub enum Error {
 
     #[snafu(display("Invalid authentication"))]
     InvalidAuthentication,
+
+    #[snafu(display("{source}"))]
+    SaffronClient { source: saffron_client::ClientError },
 
     #[snafu(display("not yet implemented"))]
     NotImplemented,
@@ -48,6 +52,12 @@ impl IntoResponse for Error {
             Self::PersistService { source } => return source.into_response(),
             Self::InvalidAuthentication { .. } => response::Error {
                 type_: response::ErrorType::Unauthorized,
+                code: None,
+                message: self.to_string(),
+                additional_fields: IndexMap::default(),
+            },
+            Self::SaffronClient { .. } => response::Error {
+                type_: response::ErrorType::Internal,
                 code: None,
                 message: self.to_string(),
                 additional_fields: IndexMap::default(),
@@ -83,7 +93,7 @@ impl Error {
             Self::Common { source } => source.status_code(),
             Self::InvalidAuthentication { .. } => StatusCode::UNAUTHORIZED,
             Self::NotFound { .. } => StatusCode::NOT_FOUND,
-            Self::PersistService { .. } | Self::NotImplemented { .. } => {
+            Self::PersistService { .. } | Self::NotImplemented | Self::SaffronClient { .. } => {
                 StatusCode::INTERNAL_SERVER_ERROR
             }
             Self::BadRequest { .. } => StatusCode::BAD_REQUEST,

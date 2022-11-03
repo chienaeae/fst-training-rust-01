@@ -1,4 +1,5 @@
 mod card;
+mod logic;
 mod user;
 
 use schemars::JsonSchema;
@@ -7,6 +8,7 @@ use uuid::Uuid;
 
 pub use self::{
     card::{Card, CreateCardRequest, UpdateCardRequest},
+    logic::{LinkedLogicInfo, Logic},
     user::User,
 };
 

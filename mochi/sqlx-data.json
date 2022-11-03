@@ -1,5 +1,99 @@
 {
   "db": "PostgreSQL",
+  "0b6df66f22392734073d9594720cb1cbe7e71218d4735cc1fe0dfb8d12ad40d9": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Uuid"
+        ]
+      }
+    },
+    "query": "INSERT INTO\n  card_linked_generic_logic (\n    id,\n    generic_logic_id\n  )\nVALUES\n  ($1, $2)\nRETURNING\n  id\n"
+  },
+  "17bc5df57265164453fd4bd10a22788f1a2749b74eeb1c20c60e80bc8ce161df": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "generic_logic_id",
+          "ordinal": 1,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "SELECT\n  id,\n  generic_logic_id\nFROM\n  card_linked_generic_logic\nWHERE\n  id = $1\n"
+  },
+  "1f94524951dd0036412f49d28df4ffb77ffaa6442a04d6ab7018d2c211e606d1": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid",
+          "Uuid"
+        ]
+      }
+    },
+    "query": "DELETE FROM\n  card_linked_generic_logic\nWHERE\n  id = $1 and generic_logic_id = $2\nRETURNING\n  id\n"
+  },
+  "45896ecbdfe2affded2da09b79a6cb3f52bea996579f949730d64814cac70508": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "generic_logic_id",
+          "ordinal": 1,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "SELECT\n  id,\n  generic_logic_id\nFROM\n  card_linked_generic_logic\nWHERE\n  generic_logic_id = $1\n"
+  },
   "4ee3e727c920a9f2ac7d3d63e5dc37a3ce7094888d669ea57c9a6cdb66b61db9": {
     "describe": {
       "columns": [
