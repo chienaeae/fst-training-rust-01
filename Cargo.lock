@@ -1634,6 +1634,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "mochi-gen-api-docs"
+version = "1.0.0"
+dependencies = [
+ "ahash 0.8.0",
+ "http",
+ "lazy_static",
+ "mochi",
+ "okapi",
+ "schemars",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "snafu",
+ "uuid 1.2.1",
+]
+
+[[package]]
 name = "multer"
 version = "2.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1741,6 +1758,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "21158b2c33aa6d4561f1c0a6ea283ca92bc54802a93b263e910746d679a7eb53"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "okapi"
+version = "0.7.0-rc.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ce66b6366e049880a35c378123fddb630b1a1a3c37fa1ca70caaf4a09f6e2893"
+dependencies = [
+ "log",
+ "schemars",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

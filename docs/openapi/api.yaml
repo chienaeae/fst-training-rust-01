@@ -1,0 +1,813 @@
+---
+openapi: 3.0.2
+info:
+  title: Mochi RESTful APIs
+  version: 1.2.0
+paths:
+  /api/v1/card:
+    get:
+      tags:
+        - Card
+      summary: List Cards
+      description: Returns all Cards
+      operationId: list_cards
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - data
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - creationTimestamp
+                        - description
+                        - id
+                        - name
+                      properties:
+                        creationTimestamp:
+                          type: string
+                          format: date-time
+                        description:
+                          type: string
+                        id:
+                          type: string
+                          format: uuid
+                        name:
+                          type: string
+        "403":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+        "500":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+      security:
+        - MochiAuthenticationJWT: []
+      servers:
+        - url: "http://localhost:3000"
+          description: Local Mochi Server
+    post:
+      tags:
+        - Card
+      summary: Create Card
+      description: Returns the Card which is created
+      operationId: create_card
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - data
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  data:
+                    type: object
+                    required:
+                      - creationTimestamp
+                      - description
+                      - id
+                      - name
+                    properties:
+                      creationTimestamp:
+                        type: string
+                        format: date-time
+                      description:
+                        type: string
+                      id:
+                        type: string
+                        format: uuid
+                      name:
+                        type: string
+        "403":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+        "500":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+      security:
+        - MochiAuthenticationJWT: []
+      servers:
+        - url: "http://localhost:3000"
+          description: Local Mochi Server
+  "/api/v1/card/{id}":
+    get:
+      tags:
+        - Card
+      summary: Get Card by ID
+      description: Returns the Card of that ID
+      operationId: get_card_by_id
+      parameters:
+        - name: id
+          in: path
+          description: ID of Card
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - data
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  data:
+                    type: object
+                    required:
+                      - creationTimestamp
+                      - description
+                      - id
+                      - name
+                    properties:
+                      creationTimestamp:
+                        type: string
+                        format: date-time
+                      description:
+                        type: string
+                      id:
+                        type: string
+                        format: uuid
+                      name:
+                        type: string
+        "403":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+        "500":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+      security:
+        - MochiAuthenticationJWT: []
+      servers:
+        - url: "http://localhost:3000"
+          description: Local Mochi Server
+    put:
+      tags:
+        - Card
+      summary: Update Card by ID
+      description: Returns the updated Card of that ID
+      operationId: update_card_by_id
+      parameters:
+        - name: id
+          in: path
+          description: ID of Card
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - data
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  data:
+                    type: object
+                    required:
+                      - creationTimestamp
+                      - description
+                      - id
+                      - name
+                    properties:
+                      creationTimestamp:
+                        type: string
+                        format: date-time
+                      description:
+                        type: string
+                      id:
+                        type: string
+                        format: uuid
+                      name:
+                        type: string
+        "403":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+        "500":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+      security:
+        - MochiAuthenticationJWT: []
+      servers:
+        - url: "http://localhost:3000"
+          description: Local Mochi Server
+    delete:
+      tags:
+        - Card
+      summary: Delete Card by ID
+      description: Returns the deleted Card ID
+      operationId: delete_card_by_id
+      parameters:
+        - name: id
+          in: path
+          description: ID of Card
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - data
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  data:
+                    type: object
+                    required:
+                      - id
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+        "403":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+        "500":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+      security:
+        - MochiAuthenticationJWT: []
+      servers:
+        - url: "http://localhost:3000"
+          description: Local Mochi Server
+  /api/v1/generic-logic:
+    get:
+      tags:
+        - Generic Logic
+      summary: List Generic Logics
+      description: Returns all Generic Logics
+      operationId: list_generic_logics
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - data
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - code
+                        - creationTimestamp
+                        - creatorId
+                        - description
+                        - linkedCard
+                        - name
+                        - permanentIdentity
+                        - revision
+                        - tagIds
+                        - unitId
+                      properties:
+                        code:
+                          description: code of Logic
+                          type: object
+                          required:
+                            - hash
+                            - type
+                          properties:
+                            hash:
+                              type: string
+                              format: byte
+                            type:
+                              description: type of Logic code
+                              type: string
+                              enum:
+                                - JavaScript
+                                - WebAssembly
+                        creationTimestamp:
+                          description: "The creation time in `ISO8601:2004` format. example: 2022-11-28T12:45:59.324310806Z"
+                          type: string
+                          format: date-time
+                        creatorId:
+                          type: string
+                          format: uuid
+                        description:
+                          type: string
+                        linkedCard:
+                          type: array
+                          items:
+                            type: object
+                            required:
+                              - cardId
+                              - id
+                            properties:
+                              cardId:
+                                type: string
+                                format: uuid
+                              id:
+                                type: string
+                                format: uuid
+                        name:
+                          type: string
+                        permanentIdentity:
+                          type: string
+                          format: uuid
+                        revision:
+                          examples:
+                            - 1
+                          type: integer
+                          format: uint32
+                          maximum: 2147483647.0
+                          minimum: 1.0
+                        tagIds:
+                          type: array
+                          items:
+                            type: string
+                            format: uuid
+                        unitId:
+                          type: string
+                          format: uuid
+        "403":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+        "500":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+      security:
+        - MochiAuthenticationJWT: []
+      servers:
+        - url: "http://localhost:3000"
+          description: Local Mochi Server
+  "/api/v1/generic-logic/{id}/link-card-by-id/{card_id}":
+    post:
+      tags:
+        - Generic Logic
+      summary: Link Generic Logic to Card
+      description: Returns linked logic info
+      operationId: link_generic_logic_to_card
+      parameters:
+        - name: id
+          in: path
+          description: ID of Generic Logic
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: card_id
+          in: path
+          description: ID of Card
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - data
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  data:
+                    type: object
+                    required:
+                      - cardId
+                      - id
+                    properties:
+                      cardId:
+                        type: string
+                        format: uuid
+                      id:
+                        type: string
+                        format: uuid
+        "403":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+        "500":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+      security:
+        - MochiAuthenticationJWT: []
+      servers:
+        - url: "http://localhost:3000"
+          description: Local Mochi Server
+    delete:
+      tags:
+        - Generic Logic
+      summary: Unlink Generic Logic from Card
+      description: Returns the deleted linked logic info ID
+      operationId: unlink_generic_logic_from_card
+      parameters:
+        - name: id
+          in: path
+          description: ID of Generic Logic
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: card_id
+          in: path
+          description: ID of Card
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - data
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  data:
+                    type: object
+                    required:
+                      - id
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+        "403":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+        "500":
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - _status
+                  - error
+                properties:
+                  _metadata:
+                    description: A metadata of API response
+                    nullable: true
+                  _status:
+                    description: A status code of API response
+                    type: integer
+                    format: uint16
+                    minimum: 0.0
+                  error:
+                    description: An error message of API response
+      security:
+        - MochiAuthenticationJWT: []
+      servers:
+        - url: "http://localhost:3000"
+          description: Local Mochi Server
+components:
+  securitySchemes:
+    MochiAuthenticationJWT:
+      description: Requires an authorization JWT.
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+  - name: Card
+    description: Card APIs
+  - name: Generic Logic
+    description: Generic Logic APIs
