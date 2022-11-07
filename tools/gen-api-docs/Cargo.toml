@@ -1,0 +1,25 @@
+[package]
+name = "mochi-gen-api-docs"
+version = "1.0.0"
+authors = ["FST Network <dev@fstk.io>"]
+edition = "2021"
+
+repository = "https://github.com/chienaeae/fst-training-rust-01"
+license-file = "LICENSE"
+publish = false
+
+[dependencies]
+mochi = { path = "../../mochi", default-feature = false }
+
+schemars = { version = "0.8", features = ["chrono", "indexmap", "uuid", "url", "bytes"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.8"
+
+http = "0.2"
+
+snafu = { version = "0.7", default-features = false, features = ["std", "futures"] }
+ahash = "0.8"
+lazy_static = "1"
+okapi = "0.7.0-rc.1"
+uuid = "1"

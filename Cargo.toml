@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "mochi"
+    "mochi",
+    "tools/gen-api-docs"
 ]
 
 [profile.release]

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+API_DOC_DIR=${SCRIPT_DIR}/../../docs/openapi
+
+cargo run --bin mochi-gen-api-docs >"$API_DOC_DIR"/api.yaml
+prettier -w "$API_DOC_DIR"/api.yaml
